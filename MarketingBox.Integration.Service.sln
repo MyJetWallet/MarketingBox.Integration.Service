@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\workflows\release-service.yml = .github\workflows\release-service.yml
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarketingBox.Integration.Service.Tests", "test\MarketingBox.Registration.Service.Tests\MarketingBox.Integration.Service.Tests.csproj", "{A6EAE662-7EE9-44CE-9A1A-19751028F533}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarketingBox.Integration.Service.Tests", "test\MarketingBox.Integration.Service.Tests\MarketingBox.Integration.Service.Tests.csproj", "{A6EAE662-7EE9-44CE-9A1A-19751028F533}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestApp", "test\TestApp\TestApp.csproj", "{79B5F90A-72DC-4C14-8D31-4144C762695A}"
 EndProject
