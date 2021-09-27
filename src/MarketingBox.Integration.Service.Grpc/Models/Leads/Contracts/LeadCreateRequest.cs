@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace MarketingBox.Integration.Service.Grpc.Models.Leads.Requests
+namespace MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts
 {
     [DataContract]
     public class LeadCreateRequest
@@ -9,13 +9,9 @@ namespace MarketingBox.Integration.Service.Grpc.Models.Leads.Requests
         public string TenantId { get; set; }
 
         [DataMember(Order = 2)]
-        public LeadGeneralInfo GeneralInfo { get; set; }
+        public LeadInfo LeadInfo { get; set; }
 
         [DataMember(Order = 3)]
-        public LeadRouteInfo Route { get; set; }
-
-        [DataMember(Order = 4)]
-        public LeadAdditionalInfo AdditionalInfo { get; set; }
-
+        public LeadBrandInfo BrandInfo { get; set; }
     }
 }

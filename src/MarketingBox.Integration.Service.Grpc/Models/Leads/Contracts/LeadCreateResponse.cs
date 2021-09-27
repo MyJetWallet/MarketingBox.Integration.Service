@@ -7,13 +7,13 @@ namespace MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts
     public class LeadCreateResponse
     {
         [DataMember(Order = 1)]
-        public bool Status { get; set; }
+        public string Status { get; set; }
 
         [DataMember(Order = 2)]
         public string Message { get; set; }
 
         [DataMember(Order = 3)]
-        public LeadBrandInfo BrandInfo{ get; set; }
+        public LeadBrandRegistrationInfo RegistrationInfo { get; set; }
 
         [DataMember(Order = 4)]
         public string FallbackUrl { get; set; }
@@ -21,21 +21,16 @@ namespace MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts
         [DataMember(Order = 5)]
         public LeadGeneralInfo OriginalData { get; set; }
 
-
         [DataMember(Order = 100)]
         public Error Error { get; set; }
 
-        public static LeadCreateResponse Successfully(LeadBrandRegistrationInfo _brandRegistrationInfo)
+        public static LeadCreateResponse Successfully(LeadBrandRegistrationInfo brandRegistrationInfo)
         {
             return new LeadCreateResponse()
             {
-                Status = true,
-                Message = _brandRegistrationInfo.LoginUrl,
-                BrandInfo = new LeadBrandInfo()
-                {
-                    Status = "successful",
-                    Data = _brandRegistrationInfo
-                },
+                Status = "successful",
+                Message = brandRegistrationInfo.LoginUrl,
+                RegistrationInfo = brandRegistrationInfo
             };
         }
 
@@ -43,7 +38,7 @@ namespace MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts
         {
             return new LeadCreateResponse()
             {
-                Status = false,
+                Status = "failed",
                 Message = error.Message,
                 Error = error,
                 OriginalData = originalData

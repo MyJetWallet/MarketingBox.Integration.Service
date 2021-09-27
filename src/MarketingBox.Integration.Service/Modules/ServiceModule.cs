@@ -17,7 +17,7 @@ namespace MarketingBox.Integration.Service.Modules
                     Program.ReloadedSettings(e => e.MarketingBoxServiceBusHostPort),
                     ApplicationEnvironment.HostName, Program.LogFactory);
 
-            var noSqlClient = builder.CreateNoSqlClient(Program.ReloadedSettings(e => e.MyNoSqlReaderHostPort));
+            //var noSqlClient = builder.CreateNoSqlClient(Program.ReloadedSettings(e => e.MyNoSqlReaderHostPort));
 
             #region Leads
 

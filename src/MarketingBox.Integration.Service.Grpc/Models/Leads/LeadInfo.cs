@@ -3,20 +3,18 @@
 namespace MarketingBox.Integration.Service.Grpc.Models.Leads
 {
     [DataContract]
-    public class LeadRouteInfo
+    public class LeadInfo
     {
         [DataMember(Order = 1)]
-        public long AffiliateId { get; set; }
+        public string LeadId { get; set; }
 
         [DataMember(Order = 2)]
-        public long BoxId { get; set; }
+        public string UniqueId { get; set; }
 
         [DataMember(Order = 3)]
-        public long CampaignId { get; set; }
+        public LeadGeneralInfo GeneralInfo { get; set; }
 
         [DataMember(Order = 4)]
-        public string Brand { get; set; }
+        public LeadAdditionalInfo AdditionalInfo { get; set; }
     }
 }
-
-

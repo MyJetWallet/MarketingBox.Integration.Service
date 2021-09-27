@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using MarketingBox.Integration.Service.Client;
-using MarketingBox.Integration.Service.Grpc.Models.Common;
 using MarketingBox.Integration.Service.Grpc.Models.Leads;
-using MarketingBox.Integration.Service.Grpc.Models.Leads.Messages;
-using MarketingBox.Integration.Service.Grpc.Models.Leads.Requests;
+using MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts;
 using ProtoBuf.Grpc.Client;
 
 namespace TestApp
@@ -21,9 +19,9 @@ namespace TestApp
             var factory = new IntegrationServiceClientFactory("http://localhost:12347");
             var client = factory.GetPartnerService();
 
-            var check = await client.GetAsync(new LeadGetRequest()
+            var check = await client.CreateAsync(new LeadCreateRequest()
             {
-                LeadId = 0,
+                TenantId = "test-tenant-id",
             });
 
             var testTenant = "Test-Tenant";
@@ -31,19 +29,19 @@ namespace TestApp
             {
                 TenantId = testTenant,
             };
-            request.GeneralInfo = new LeadGeneralInfo()
-            {
-                //Currency = Currency.CHF,
-                //Email = "email@email.com",
-                //Password = "sadadadwad",
-                //Phone = "+79990999999",
-                //Skype = "skype",
-                //Type = LeadType.Active,
-                //Username = "User",
-                //ZipCode = "414141"
-            };
+            //request.GeneralInfo = new LeadGeneralInfo()
+            //{
+            //    //Currency = Currency.CHF,
+            //    //Email = "email@email.com",
+            //    //Password = "sadadadwad",
+            //    //Phone = "+79990999999",
+            //    //Skype = "skype",
+            //    //Type = LeadType.Active,
+            //    //Username = "User",
+            //    //ZipCode = "414141"
+            //};
 
-            var leadCreated = (await  client.CreateAsync(request)).BrandInfo;
+            //var leadCreated = (await  client.CreateAsync(request)).BrandInfo;
 
             //Console.WriteLine(leadCreated.LeadId);
 
@@ -53,7 +51,7 @@ namespace TestApp
             //    TenantId = leadCreated.TenantId,
             //    GeneralInfo = request.GeneralInfo,
             //    Sequence = 1
-            //})).Lead;
+            //})).LeadInfo;
 
             //await client.DeleteAsync(new LeadDeleteRequest()
             //{

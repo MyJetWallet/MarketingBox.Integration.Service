@@ -20,11 +20,5 @@ namespace MarketingBox.Integration.Service.Messages.Deposits
 
         [DataMember(Order = 5)]
         public long Sequence { get; set; }
-
-        //[DataMember(Order = 6)]
-        //public decimal Amount { get; set; }
-
-        //[DataMember(Order = 7)]
-        //public Currency Currency { get; set; }
     }
 }

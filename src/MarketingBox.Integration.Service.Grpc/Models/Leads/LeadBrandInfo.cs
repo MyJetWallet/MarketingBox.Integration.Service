@@ -6,9 +6,9 @@ namespace MarketingBox.Integration.Service.Grpc.Models.Leads
     public class LeadBrandInfo
     {
         [DataMember(Order = 1)]
-        public string Status { get; set; }
+        public long BrandId { get; set; }
 
         [DataMember(Order = 2)]
-        public LeadBrandRegistrationInfo Data { get; set; }
+        public string Brand { get; set; }
     }
 }
