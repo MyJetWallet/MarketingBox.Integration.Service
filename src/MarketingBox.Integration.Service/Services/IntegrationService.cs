@@ -12,11 +12,11 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using MarketingBox.Integration.Service.Messages.Partners;
 using MarketingBox.Integration.Postgres.Entities.Lead;
 using MarketingBox.Integration.Service.Grpc.Models.Common;
 using MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts;
 using MarketingBox.Integration.Service.Grpc.Models.Leads.Requests;
+using MarketingBox.Integration.Service.Messages.Deposits;
 using Z.EntityFramework.Plus;
 using LeadBrandInfo = MarketingBox.Integration.Postgres.Entities.Lead.LeadBrandInfo;
 using LeadStatus = MarketingBox.Integration.Service.Domain.Lead.LeadStatus;
@@ -28,21 +28,18 @@ namespace MarketingBox.Integration.Service.Services
     {
         private readonly ILogger<IntegrationService> _logger;
         private readonly DbContextOptionsBuilder<DatabaseContext> _dbContextOptionsBuilder;
-        private readonly IPublisher<LeadUpdated> _publisherLeadUpdated;
+        private readonly IPublisher<DepositUpdateMessage> _publisherLeadUpdated;
         private readonly IMyNoSqlServerDataWriter<LeadNoSql> _myNoSqlServerDataWriter;
-        private readonly IPublisher<PartnerRemoved> _publisherPartnerRemoved;
 
         public IntegrationService(ILogger<IntegrationService> logger,
             DbContextOptionsBuilder<DatabaseContext> dbContextOptionsBuilder,
-            IPublisher<LeadUpdated> publisherLeadUpdated,
-            IMyNoSqlServerDataWriter<LeadNoSql> myNoSqlServerDataWriter,
-            IPublisher<PartnerRemoved> publisherPartnerRemoved)
+            IPublisher<DepositUpdateMessage> publisherLeadUpdated,
+            IMyNoSqlServerDataWriter<LeadNoSql> myNoSqlServerDataWriter)
         {
             _logger = logger;
             _dbContextOptionsBuilder = dbContextOptionsBuilder;
             _publisherLeadUpdated = publisherLeadUpdated;
             _myNoSqlServerDataWriter = myNoSqlServerDataWriter;
-            _publisherPartnerRemoved = publisherPartnerRemoved;
         }
 
         public async Task<LeadCreateResponse> CreateAsync(LeadCreateRequest request)
@@ -225,12 +222,12 @@ namespace MarketingBox.Integration.Service.Services
                 if (partnerEntity == null)
                     return new LeadCreateResponse();
 
-                await _publisherPartnerRemoved.PublishAsync(new PartnerRemoved()
-                {
-                    AffiliateId = partnerEntity.LeadId,
-                    //Sequence = partnerEntity.Sequence,
-                    TenantId = partnerEntity.TenantId
-                });
+                //await _publisherPartnerRemoved.PublishAsync(new PartnerRemoved()
+                //{
+                //    AffiliateId = partnerEntity.LeadId,
+                //    //Sequence = partnerEntity.Sequence,
+                //    TenantId = partnerEntity.TenantId
+                //});
 
                 await _myNoSqlServerDataWriter.DeleteAsync(
                     LeadNoSql.GeneratePartitionKey(partnerEntity.TenantId),
@@ -263,24 +260,24 @@ namespace MarketingBox.Integration.Service.Services
             };
         }
 
-        private static LeadUpdated MapToMessage(LeadEntity leadEntity)
+        private static DepositUpdateMessage MapToMessage(LeadEntity leadEntity)
         {
-            return new LeadUpdated()
+            return new DepositUpdateMessage()
             {
-                TenantId = leadEntity.TenantId,
-                AffiliateId = leadEntity.LeadId,
-                GeneralInfo = new Messages.Partners.PartnerGeneralInfo()
-                {
-                    //CreatedAt = leadEntity.BrandInfo.CreatedAt.UtcDateTime,
-                    //Email = leadEntity.BrandInfo.Email,
-                    ////Password = leadEntity.BrandInfo.Password,
-                    //Phone = leadEntity.BrandInfo.Phone,
-                    //Role = leadEntity.BrandInfo.Role.MapEnum<Messages.Partners.PartnerRole>(),
-                    //Skype = leadEntity.BrandInfo.Skype,
-                    //Type = leadEntity.BrandInfo.Type.MapEnum<Messages.Partners.PartnerState>(),
-                    //Username = leadEntity.BrandInfo.Username,
-                    //ZipCode = leadEntity.BrandInfo.ZipCode
-                }
+                //TenantId = leadEntity.TenantId,
+                //AffiliateId = leadEntity.LeadId,
+                //GeneralInfo = new Messages.Partners.PartnerGeneralInfo()
+                //{
+                //    //CreatedAt = leadEntity.BrandInfo.CreatedAt.UtcDateTime,
+                //    //Email = leadEntity.BrandInfo.Email,
+                //    ////Password = leadEntity.BrandInfo.Password,
+                //    //Phone = leadEntity.BrandInfo.Phone,
+                //    //Role = leadEntity.BrandInfo.Role.MapEnum<Messages.Partners.PartnerRole>(),
+                //    //Skype = leadEntity.BrandInfo.Skype,
+                //    //Type = leadEntity.BrandInfo.Type.MapEnum<Messages.Partners.PartnerState>(),
+                //    //Username = leadEntity.BrandInfo.Username,
+                //    //ZipCode = leadEntity.BrandInfo.ZipCode
+                //}
             };
         }
 

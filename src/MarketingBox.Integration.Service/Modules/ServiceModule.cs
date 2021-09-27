@@ -1,6 +1,6 @@
 ﻿using Autofac;
 using MarketingBox.Integration.Service.Messages;
-using MarketingBox.Integration.Service.Messages.Partners;
+using MarketingBox.Integration.Service.Messages.Deposits;
 using MarketingBox.Integration.Service.MyNoSql.Leads;
 using MyJetWallet.Sdk.NoSql;
 using MyJetWallet.Sdk.Service;
@@ -21,11 +21,11 @@ namespace MarketingBox.Integration.Service.Modules
 
             #region Leads
 
-            // publisher (IPublisher<LeadUpdated>)
-            builder.RegisterMyServiceBusPublisher<LeadUpdated>(serviceBusClient, Topics.LeadCreatedTopic, false);
+            // publisher (IPublisher<DepositUpdateMessage>)
+            builder.RegisterMyServiceBusPublisher<DepositUpdateMessage>(serviceBusClient, Topics.LeadDepositUpdateTopic, false);
 
             // publisher (IPublisher<PartnerRemoved>)
-            builder.RegisterMyServiceBusPublisher<PartnerRemoved>(serviceBusClient, Topics.LeadUpdatedTopic, false);
+            //builder.RegisterMyServiceBusPublisher<PartnerRemoved>(serviceBusClient, Topics.LeadUpdatedTopic, false);
 
             // register writer (IMyNoSqlServerDataWriter<LeadNoSql>)
             builder.RegisterMyNoSqlWriter<LeadNoSql>(Program.ReloadedSettings(e => e.MyNoSqlWriterUrl), LeadNoSql.TableName);

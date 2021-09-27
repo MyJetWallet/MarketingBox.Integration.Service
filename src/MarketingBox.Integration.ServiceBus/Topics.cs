@@ -2,7 +2,6 @@
 {
     public class Topics
     {
-        public const string LeadCreatedTopic = "marketing-box-integration-service-lead-create";
-        public const string LeadUpdatedTopic = "marketing-box-integration-service-lead-update";
+        public const string LeadDepositUpdateTopic = "marketing-box-integration-service-lead-deposit-update";
     }
 }
