@@ -10,18 +10,21 @@ namespace MarketingBox.Integration.Service.Messages.Deposits
         public string TenantId { get; set; }
 
         [DataMember(Order = 2)]
-        public long LeadId { get; set; }
-
-        [DataMember(Order = 3)]
         public string CustomerId { get; set; }
 
+        [DataMember(Order = 3)]
+        public string Email { get; set; }
+
         [DataMember(Order = 4)]
-        public decimal Amount { get; set; }
+        public string BrandName { get; set; }
 
         [DataMember(Order = 5)]
-        public Currency Currency { get; set; }
-
-        [DataMember(Order = 6)]
         public long Sequence { get; set; }
+
+        //[DataMember(Order = 6)]
+        //public decimal Amount { get; set; }
+
+        //[DataMember(Order = 7)]
+        //public Currency Currency { get; set; }
     }
 }
