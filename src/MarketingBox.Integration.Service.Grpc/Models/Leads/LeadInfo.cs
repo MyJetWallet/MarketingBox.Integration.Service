@@ -6,7 +6,7 @@ namespace MarketingBox.Integration.Service.Grpc.Models.Leads
     public class LeadInfo
     {
         [DataMember(Order = 1)]
-        public string LeadId { get; set; }
+        public long LeadId { get; set; }
 
         [DataMember(Order = 2)]
         public string UniqueId { get; set; }
