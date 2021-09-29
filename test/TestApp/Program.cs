@@ -17,15 +17,15 @@ namespace TestApp
             Console.ReadLine();
 
             var factory = new IntegrationServiceClientFactory("http://localhost:12347");
-            var client = factory.GetPartnerService();
+            var client = factory.GetIntegrationService();
 
-            var check = await client.CreateAsync(new LeadCreateRequest()
+            var check = await client.CreateAsync(new IntegrationLeadCreateRequest()
             {
                 TenantId = "test-tenant-id",
             });
 
             var testTenant = "Test-Tenant";
-            var request = new LeadCreateRequest()
+            var request = new IntegrationLeadCreateRequest()
             {
                 TenantId = testTenant,
             };
@@ -41,7 +41,7 @@ namespace TestApp
             //    //ZipCode = "414141"
             //};
 
-            //var leadCreated = (await  client.CreateAsync(request)).BrandInfo;
+            //var leadCreated = (await  client.CreateAsync(request)).BrandIntegrationInfo;
 
             //Console.WriteLine(leadCreated.LeadId);
 
@@ -51,7 +51,7 @@ namespace TestApp
             //    TenantId = leadCreated.TenantId,
             //    GeneralInfo = request.GeneralInfo,
             //    Sequence = 1
-            //})).LeadInfo;
+            //})).IntegrationLeadInfo;
 
             //await client.DeleteAsync(new LeadDeleteRequest()
             //{

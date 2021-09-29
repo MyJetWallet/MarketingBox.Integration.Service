@@ -11,6 +11,6 @@ namespace MarketingBox.Integration.Service.Client
         {
         }
 
-        public IIntegrationService GetPartnerService() => CreateGrpcService<IIntegrationService>();
+        public IIntegrationService GetIntegrationService() => CreateGrpcService<IIntegrationService>();
     }
 }

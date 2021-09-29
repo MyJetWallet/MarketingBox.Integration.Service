@@ -15,27 +15,23 @@ namespace MarketingBox.Integration.Service
         public ApplicationLifetimeManager(
             IHostApplicationLifetime appLifetime, 
             ILogger<ApplicationLifetimeManager> logger,
-            MyServiceBusTcpClient myServiceBusTcpClient,
-            MyNoSqlClientLifeTime myNoSqlClientLifeTime)
+            MyServiceBusTcpClient myServiceBusTcpClient)
             : base(appLifetime)
         {
             _logger = logger;
             _myServiceBusTcpClient = myServiceBusTcpClient;
-            _myNoSqlClientLifeTime = myNoSqlClientLifeTime;
         }
 
         protected override void OnStarted()
         {
             _logger.LogInformation("OnStarted has been called.");
             _myServiceBusTcpClient.Start();
-            _myNoSqlClientLifeTime.Start();
         }
 
         protected override void OnStopping()
         {
             _logger.LogInformation("OnStopping has been called.");
             _myServiceBusTcpClient.Stop();
-            _myNoSqlClientLifeTime.Stop();
         }
 
         protected override void OnStopped()

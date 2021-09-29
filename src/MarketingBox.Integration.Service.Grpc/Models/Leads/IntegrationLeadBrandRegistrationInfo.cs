@@ -25,7 +25,8 @@ namespace MarketingBox.Integration.Service.Grpc.Models.Leads
     //    "id": "PLAYER-be3d12f5-66fb-4ad5-8aa1-70416a91f0fd"
     //}    
     [DataContract]
-    public class LeadBrandRegistrationInfo
+    public class 
+        LeadBrandRegistrationInfo
     {
         [DataMember(Order = 1)]
         public string CustomerId { get; set; }

@@ -3,7 +3,7 @@
 namespace MarketingBox.Integration.Service.Grpc.Models.Leads
 {
     [DataContract]
-    public class LeadInfo
+    public class IntegrationLeadInfo
     {
         [DataMember(Order = 1)]
         public long LeadId { get; set; }
@@ -15,6 +15,6 @@ namespace MarketingBox.Integration.Service.Grpc.Models.Leads
         public LeadGeneralInfo GeneralInfo { get; set; }
 
         [DataMember(Order = 4)]
-        public LeadAdditionalInfo AdditionalInfo { get; set; }
+        public LeadAdditionalIntegrationInfo AdditionalIntegrationInfo { get; set; }
     }
 }

@@ -3,15 +3,15 @@
 namespace MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts
 {
     [DataContract]
-    public class LeadCreateRequest
+    public class IntegrationLeadCreateRequest
     {
         [DataMember(Order = 1)]
         public string TenantId { get; set; }
 
         [DataMember(Order = 2)]
-        public LeadInfo LeadInfo { get; set; }
+        public IntegrationLeadInfo IntegrationLeadInfo { get; set; }
 
         [DataMember(Order = 3)]
-        public LeadBrandInfo BrandInfo { get; set; }
+        public LeadBrandIntegrationInfo BrandIntegrationInfo { get; set; }
     }
 }

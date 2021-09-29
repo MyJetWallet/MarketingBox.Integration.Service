@@ -3,7 +3,7 @@
 namespace MarketingBox.Integration.Service.Grpc.Models.Leads
 {
     [DataContract]
-    public class LeadBrandInfo
+    public class LeadBrandIntegrationInfo
     {
         [DataMember(Order = 1)]
         public long BrandId { get; set; }

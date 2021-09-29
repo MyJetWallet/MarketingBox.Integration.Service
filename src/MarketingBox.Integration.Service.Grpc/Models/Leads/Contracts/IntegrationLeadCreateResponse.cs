@@ -4,7 +4,7 @@ using MarketingBox.Integration.Service.Grpc.Models.Common;
 namespace MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts
 {
     [DataContract]
-    public class LeadCreateResponse
+    public class IntegrationLeadCreateResponse
     {
         [DataMember(Order = 1)]
         public string Status { get; set; }
@@ -24,9 +24,9 @@ namespace MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts
         [DataMember(Order = 100)]
         public Error Error { get; set; }
 
-        public static LeadCreateResponse Successfully(LeadBrandRegistrationInfo brandRegistrationInfo)
+        public static IntegrationLeadCreateResponse Successfully(LeadBrandRegistrationInfo brandRegistrationInfo)
         {
-            return new LeadCreateResponse()
+            return new IntegrationLeadCreateResponse()
             {
                 Status = "successful",
                 Message = brandRegistrationInfo.LoginUrl,
@@ -34,9 +34,9 @@ namespace MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts
             };
         }
 
-        public static LeadCreateResponse Failed(Error error, LeadGeneralInfo originalData)
+        public static IntegrationLeadCreateResponse Failed(Error error, LeadGeneralInfo originalData)
         {
-            return new LeadCreateResponse()
+            return new IntegrationLeadCreateResponse()
             {
                 Status = "failed",
                 Message = error.Message,

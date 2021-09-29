@@ -26,8 +26,8 @@ namespace MarketingBox.Integration.Service.Settings
         [YamlProperty("MarketingBoxIntegrationService.MarketingBoxServiceBusHostPort")]
         public string MarketingBoxServiceBusHostPort { get; set; }
 
-        [YamlProperty("MarketingBoxIntegrationService.MarketingBoxIntegrationSimpleBitHostPort")]
-        public string MarketingBoxIntegrationSimpleBitHostPort { get; set; }
+        [YamlProperty("MarketingBoxIntegrationService.RegistrationServiceUrl")]
+        public string RegistrationServiceUrl { get; set; }
 
     }
 }
