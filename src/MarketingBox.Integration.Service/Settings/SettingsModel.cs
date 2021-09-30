@@ -29,5 +29,8 @@ namespace MarketingBox.Integration.Service.Settings
         [YamlProperty("MarketingBoxIntegrationService.RegistrationServiceUrl")]
         public string RegistrationServiceUrl { get; set; }
 
+
+        [YamlProperty("MarketingBoxIntegrationService.IntegrationMonfexBridgeUrl")]
+        public string IntegrationMonfexBridgeUrl { get; set; }
     }
 }

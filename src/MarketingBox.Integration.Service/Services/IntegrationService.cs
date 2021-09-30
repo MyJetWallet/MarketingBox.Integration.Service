@@ -7,8 +7,11 @@ using System;
 using System.Threading.Tasks;
 using MarketingBox.Integration.Postgres.Entities.Lead;
 using MarketingBox.Integration.Service.Grpc.Models.Common;
+using MarketingBox.Integration.Service.Grpc.Models.Leads;
 using MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts;
 using MarketingBox.Integration.Service.Messages.Deposits;
+using MarketingBox.Integration.SimpleTrading.Bridge.Grpc;
+using MarketingBox.Integration.SimpleTrading.Bridge.Grpc.Models.Leads.Contracts;
 
 namespace MarketingBox.Integration.Service.Services
 {
@@ -17,23 +20,24 @@ namespace MarketingBox.Integration.Service.Services
         private readonly ILogger<IntegrationService> _logger;
         private readonly DbContextOptionsBuilder<DatabaseContext> _dbContextOptionsBuilder;
         private readonly IPublisher<DepositUpdateMessage> _publisherLeadUpdated;
-        //private readonly IMyNoSqlServerDataWriter<LeadNoSql> _myNoSqlServerDataWriter;
+        private readonly IBridgeService _bridgeService;
+        
 
         public IntegrationService(ILogger<IntegrationService> logger,
             DbContextOptionsBuilder<DatabaseContext> dbContextOptionsBuilder,
-            IPublisher<DepositUpdateMessage> publisherLeadUpdated
-            //IMyNoSqlServerDataWriter<LeadNoSql> myNoSqlServerDataWriter
+            IPublisher<DepositUpdateMessage> publisherLeadUpdated,
+            IBridgeService bridgeService
             )
         {
             _logger = logger;
             _dbContextOptionsBuilder = dbContextOptionsBuilder;
             _publisherLeadUpdated = publisherLeadUpdated;
-            //_myNoSqlServerDataWriter = myNoSqlServerDataWriter;
+            _bridgeService = bridgeService;
         }
 
-        public async Task<IntegrationLeadCreateResponse> CreateAsync(Service.Grpc.Models.Leads.Contracts.IntegrationLeadCreateRequest request)
+        public async Task<RegistrationLeadResponse> RegisterLeadAsync(Service.Grpc.Models.Leads.Contracts.RegistrationLeadRequest request)
         {
-            _logger.LogInformation("Creating new IntegrationLeadInfo {@context}", request);
+            _logger.LogInformation("Creating new RegistrationLeadInfo {@context}", request);
             using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
 
             try
@@ -46,56 +50,42 @@ namespace MarketingBox.Integration.Service.Services
                 //await _myNoSqlServerDataWriter.InsertOrReplaceAsync(nosql);
                 //_logger.LogInformation("Sent partner update to MyNoSql {@context}", request);
 
-                var brandInfo = await BrandRegisterAsync(null);
+                var customerInfo = await _bridgeService.RegisterCustomerAsync(new RegistrationCustomerRequest());
 
-                return MapToGrpc(null, null);
+                return MapToGrpc(customerInfo);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Error creating lead {@context}", request);
 
-                return new IntegrationLeadCreateResponse() { Error = new Error() { Message = "Internal error", Type = ErrorType.Unknown } };
+                return new RegistrationLeadResponse() { Error = new Error() { Message = "Internal error", Type = ErrorType.Unknown } };
             }
         }
 
-        public async Task<Grpc.Models.Leads.LeadBrandIntegrationInfo> BrandRegisterAsync(LeadEntity leadEntity)
+
+        private static RegistrationLeadResponse MapToGrpc(RegistrationCustomerResponse brandCustomerInfo)
         {
-            string brandLoginUrl = @"https://trading-test.handelpro.biz/lpLogin/6DB5D4818181B806DBF7B19EBDC5FD97F1B82759077317B6481BC883F071783DBEF568426B81DF43044E326C26437E097F21A2484110D13420E9EC6E44A1B2BE?lang=PL";
-            string brandName = "Monfex";
-            string brandCustomerId = "02537c06cab34f62931c263bf3480959";
-            string customerEmail = "yuriy.test.2020.09.22.01@mailinator.com";
-            string brandToken = "6DB5D4818181B806DBF7B19EBDC5FD97F1B82759077317B6481BC883F071783DBEF568426B81DF43044E326C26437E097F21A2484110D13420E9EC6E44A1B2BE";
+            //if(brandCustomerInfo.Status.Equals("successful", StringComparison.OrdinalIgnoreCase))
+            //{
 
-            var brandInfo = new Grpc.Models.Leads.LeadBrandIntegrationInfo()
-            {
-                //Status = "successful",
-                //Data = new LeadBrandRegistrationInfo()
-                //{
-                //    Email = customerEmail, //leadEntity.Email,
-                //    UniqueId = leadEntity.LeadId.ToString(),
-                //    LoginUrl = brandLoginUrl,
-                //    Broker = brandName,
-                //    CustomerId = brandCustomerId,
-                //    Token = brandToken
-                //}
-            };
-            await Task.Delay(1000);
-            return brandInfo;
-        }
+                return RegistrationLeadResponse.Successfully(new RegistrationCustomerInfo()
+                {
+                    CustomerId = brandCustomerInfo.RegistrationInfo.CustomerId,
+                    LoginUrl = brandCustomerInfo.RegistrationInfo.LoginUrl,
+                    Password = brandCustomerInfo.RegistrationInfo.Password,
+                    Token = brandCustomerInfo.RegistrationInfo.Token,
+                });
+            //}
 
+            //return RegistrationLeadResponse.Failed(new Error()
+            //{
+            //    Message = brandCustomerInfo.Error.Message,
+            //    Type = ErrorType.Unknown// brandCustomerInfo.Error.Type
+            //}, new RegistrationLeadInfo()
+            //{
+                
+            //});
 
-        private static IntegrationLeadCreateResponse MapToGrpc(LeadEntity leadEntity, 
-            Grpc.Models.Leads.LeadBrandRegistrationInfo brandInfo)
-        {
-            //TODO: Remove
-            return new IntegrationLeadCreateResponse() 
-            {
-                //Status = ,
-                //FallbackUrl = String.Empty,
-                //Message = .Data.LoginUrl,
-                //Error = null,
-                //OriginalData = null,
-            };
         }
 
         private static DepositUpdateMessage MapToMessage(LeadEntity leadEntity)
@@ -104,17 +94,17 @@ namespace MarketingBox.Integration.Service.Services
             {
                 //TenantId = leadEntity.TenantId,
                 //AffiliateId = leadEntity.LeadId,
-                //GeneralInfo = new Messages.Partners.PartnerGeneralInfo()
+                //Info = new Messages.Partners.PartnerGeneralInfo()
                 //{
-                //    //CreatedAt = leadEntity.BrandIntegrationInfo.CreatedAt.UtcDateTime,
-                //    //Email = leadEntity.BrandIntegrationInfo.Email,
-                //    ////Password = leadEntity.BrandIntegrationInfo.Password,
-                //    //Phone = leadEntity.BrandIntegrationInfo.Phone,
-                //    //Role = leadEntity.BrandIntegrationInfo.Role.MapEnum<Messages.Partners.PartnerRole>(),
-                //    //Skype = leadEntity.BrandIntegrationInfo.Skype,
-                //    //Type = leadEntity.BrandIntegrationInfo.Type.MapEnum<Messages.Partners.PartnerState>(),
-                //    //Username = leadEntity.BrandIntegrationInfo.Username,
-                //    //ZipCode = leadEntity.BrandIntegrationInfo.ZipCode
+                //    //CreatedAt = leadEntity.RegistrationBrandInfo.CreatedAt.UtcDateTime,
+                //    //Email = leadEntity.RegistrationBrandInfo.Email,
+                //    ////Password = leadEntity.RegistrationBrandInfo.Password,
+                //    //Phone = leadEntity.RegistrationBrandInfo.Phone,
+                //    //Role = leadEntity.RegistrationBrandInfo.Role.MapEnum<Messages.Partners.PartnerRole>(),
+                //    //Skype = leadEntity.RegistrationBrandInfo.Skype,
+                //    //Type = leadEntity.RegistrationBrandInfo.Type.MapEnum<Messages.Partners.PartnerState>(),
+                //    //Username = leadEntity.RegistrationBrandInfo.Username,
+                //    //ZipCode = leadEntity.RegistrationBrandInfo.ZipCode
                 //}
             };
         }
@@ -124,7 +114,7 @@ namespace MarketingBox.Integration.Service.Services
         //    return LeadNoSql.Create(
         //        leadEntity.TenantId,
         //        leadEntity.LeadId,
-        //        new MyNoSql.Leads.LeadGeneralInfo()
+        //        new MyNoSql.Leads.RegistrationLeadInfo()
         //        {
         //            CreatedAt = leadEntity.CreatedAt,
         //            Email = leadEntity.Email,

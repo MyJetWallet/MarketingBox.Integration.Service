@@ -4,7 +4,7 @@ using MarketingBox.Integration.Service.Grpc.Models.Common;
 namespace MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts
 {
     [DataContract]
-    public class IntegrationLeadCreateResponse
+    public class RegistrationLeadResponse
     {
         [DataMember(Order = 1)]
         public string Status { get; set; }
@@ -13,30 +13,30 @@ namespace MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts
         public string Message { get; set; }
 
         [DataMember(Order = 3)]
-        public LeadBrandRegistrationInfo RegistrationInfo { get; set; }
+        public RegistrationCustomerInfo RegistrationCustomerInfo { get; set; }
 
         [DataMember(Order = 4)]
         public string FallbackUrl { get; set; }
 
         [DataMember(Order = 5)]
-        public LeadGeneralInfo OriginalData { get; set; }
+        public RegistrationLeadInfo OriginalData { get; set; }
 
         [DataMember(Order = 100)]
         public Error Error { get; set; }
 
-        public static IntegrationLeadCreateResponse Successfully(LeadBrandRegistrationInfo brandRegistrationInfo)
+        public static RegistrationLeadResponse Successfully(RegistrationCustomerInfo brandRegistrationCustomerInfo)
         {
-            return new IntegrationLeadCreateResponse()
+            return new RegistrationLeadResponse()
             {
                 Status = "successful",
-                Message = brandRegistrationInfo.LoginUrl,
-                RegistrationInfo = brandRegistrationInfo
+                Message = brandRegistrationCustomerInfo.LoginUrl,
+                RegistrationCustomerInfo = brandRegistrationCustomerInfo
             };
         }
 
-        public static IntegrationLeadCreateResponse Failed(Error error, LeadGeneralInfo originalData)
+        public static RegistrationLeadResponse Failed(Error error, RegistrationLeadInfo originalData)
         {
-            return new IntegrationLeadCreateResponse()
+            return new RegistrationLeadResponse()
             {
                 Status = "failed",
                 Message = error.Message,

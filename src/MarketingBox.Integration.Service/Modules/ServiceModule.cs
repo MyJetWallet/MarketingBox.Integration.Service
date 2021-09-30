@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using MarketingBox.Integration.Service.Messages;
 using MarketingBox.Integration.Service.Messages.Deposits;
+using MarketingBox.Integration.SimpleTrading.Bridge.Client;
 using MyJetWallet.Sdk.NoSql;
 using MyJetWallet.Sdk.Service;
 using MyJetWallet.Sdk.ServiceBus;
@@ -16,9 +17,8 @@ namespace MarketingBox.Integration.Service.Modules
                     Program.ReloadedSettings(e => e.MarketingBoxServiceBusHostPort),
                     ApplicationEnvironment.HostName, Program.LogFactory);
 
-            
-            
-            #region Leads
+
+            builder.RegisterSimpleTradingBridgeClient(Program.Settings.IntegrationMonfexBridgeUrl);
 
             // publisher (IPublisher<DepositUpdateMessage>)
             builder.RegisterMyServiceBusPublisher<DepositUpdateMessage>(serviceBusClient, Topics.LeadDepositUpdateTopic, false);
@@ -29,7 +29,6 @@ namespace MarketingBox.Integration.Service.Modules
             // register writer (IMyNoSqlServerDataWriter<LeadNoSql>)
             //builder.RegisterMyNoSqlWriter<LeadNoSql>(Program.ReloadedSettings(e => e.MyNoSqlWriterUrl), LeadNoSql.TableName);
             
-            #endregion
         }
     }
 }
