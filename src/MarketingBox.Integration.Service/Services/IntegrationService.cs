@@ -18,19 +18,19 @@ namespace MarketingBox.Integration.Service.Services
     public class IntegrationService : IIntegrationService
     {
         private readonly ILogger<IntegrationService> _logger;
-        private readonly DbContextOptionsBuilder<DatabaseContext> _dbContextOptionsBuilder;
+        //private readonly DbContextOptionsBuilder<DatabaseContext> _dbContextOptionsBuilder;
         private readonly IPublisher<DepositUpdateMessage> _publisherLeadUpdated;
         private readonly IBridgeService _bridgeService;
         
 
         public IntegrationService(ILogger<IntegrationService> logger,
-            DbContextOptionsBuilder<DatabaseContext> dbContextOptionsBuilder,
+            //DbContextOptionsBuilder<DatabaseContext> dbContextOptionsBuilder,
             IPublisher<DepositUpdateMessage> publisherLeadUpdated,
             IBridgeService bridgeService
             )
         {
             _logger = logger;
-            _dbContextOptionsBuilder = dbContextOptionsBuilder;
+            //_dbContextOptionsBuilder = dbContextOptionsBuilder;
             _publisherLeadUpdated = publisherLeadUpdated;
             _bridgeService = bridgeService;
         }
@@ -38,7 +38,7 @@ namespace MarketingBox.Integration.Service.Services
         public async Task<RegistrationLeadResponse> RegisterLeadAsync(Service.Grpc.Models.Leads.Contracts.RegistrationLeadRequest request)
         {
             _logger.LogInformation("Creating new RegistrationLeadInfo {@context}", request);
-            using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
+            //using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
 
             try
             {

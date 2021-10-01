@@ -10,7 +10,6 @@ namespace MarketingBox.Integration.Service
     {
         private readonly ILogger<ApplicationLifetimeManager> _logger;
         private readonly MyServiceBusTcpClient _myServiceBusTcpClient;
-        private readonly MyNoSqlClientLifeTime _myNoSqlClientLifeTime;
 
         public ApplicationLifetimeManager(
             IHostApplicationLifetime appLifetime, 
