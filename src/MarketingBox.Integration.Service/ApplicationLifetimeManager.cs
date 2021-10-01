@@ -10,21 +10,25 @@ namespace MarketingBox.Integration.Service
     {
         private readonly ILogger<ApplicationLifetimeManager> _logger;
         private readonly MyServiceBusTcpClient _myServiceBusTcpClient;
+        private readonly BackgroundJobs _myBackgroundJobs;
 
         public ApplicationLifetimeManager(
             IHostApplicationLifetime appLifetime, 
             ILogger<ApplicationLifetimeManager> logger,
-            MyServiceBusTcpClient myServiceBusTcpClient)
+            MyServiceBusTcpClient myServiceBusTcpClient,
+            BackgroundJobs myBackgroundJobs)
             : base(appLifetime)
         {
             _logger = logger;
             _myServiceBusTcpClient = myServiceBusTcpClient;
+            _myBackgroundJobs = myBackgroundJobs;
         }
 
         protected override void OnStarted()
         {
             _logger.LogInformation("OnStarted has been called.");
             _myServiceBusTcpClient.Start();
+            _myBackgroundJobs.Start();
         }
 
         protected override void OnStopping()

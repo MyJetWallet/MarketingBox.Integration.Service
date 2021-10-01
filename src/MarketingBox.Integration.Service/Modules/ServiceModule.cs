@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using MarketingBox.Integration.Service.Messages;
 using MarketingBox.Integration.Service.Messages.Deposits;
+using MarketingBox.Integration.Service.Services;
 using MarketingBox.Integration.SimpleTrading.Bridge.Client;
 using MyJetWallet.Sdk.NoSql;
 using MyJetWallet.Sdk.Service;
@@ -28,7 +29,8 @@ namespace MarketingBox.Integration.Service.Modules
 
             // register writer (IMyNoSqlServerDataWriter<LeadNoSql>)
             //builder.RegisterMyNoSqlWriter<LeadNoSql>(Program.ReloadedSettings(e => e.MyNoSqlWriterUrl), LeadNoSql.TableName);
-            
+            builder.RegisterType<DepositUpdateStorage>().As<IDepositUpdateStorage>().SingleInstance();
+            builder.RegisterType<BackgroundJobs>().SingleInstance().AutoActivate().AsSelf();
         }
     }
 }

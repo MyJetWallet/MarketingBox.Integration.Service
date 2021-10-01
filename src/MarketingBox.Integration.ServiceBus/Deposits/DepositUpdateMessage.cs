@@ -1,5 +1,4 @@
 ﻿using System.Runtime.Serialization;
-using MarketingBox.Integration.Service.Messages.Common;
 
 namespace MarketingBox.Integration.Service.Messages.Deposits
 {
@@ -20,5 +19,8 @@ namespace MarketingBox.Integration.Service.Messages.Deposits
 
         [DataMember(Order = 5)]
         public long Sequence { get; set; }
+
+        [DataMember(Order = 6)]
+        public long BrandId { get; set; }
     }
 }

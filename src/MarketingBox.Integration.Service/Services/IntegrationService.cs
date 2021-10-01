@@ -21,28 +21,28 @@ namespace MarketingBox.Integration.Service.Services
         //private readonly DbContextOptionsBuilder<DatabaseContext> _dbContextOptionsBuilder;
         private readonly IPublisher<DepositUpdateMessage> _publisherLeadUpdated;
         private readonly IBridgeService _bridgeService;
-        
+        private readonly IDepositUpdateStorage _depositUpdateStorage;
+
 
         public IntegrationService(ILogger<IntegrationService> logger,
             //DbContextOptionsBuilder<DatabaseContext> dbContextOptionsBuilder,
             IPublisher<DepositUpdateMessage> publisherLeadUpdated,
-            IBridgeService bridgeService
+            IBridgeService bridgeService,
+            IDepositUpdateStorage depositUpdateStorage
             )
         {
             _logger = logger;
             //_dbContextOptionsBuilder = dbContextOptionsBuilder;
             _publisherLeadUpdated = publisherLeadUpdated;
             _bridgeService = bridgeService;
+            _depositUpdateStorage = depositUpdateStorage;
         }
 
-        public async Task<RegistrationLeadResponse> RegisterLeadAsync(Service.Grpc.Models.Leads.Contracts.RegistrationLeadRequest request)
+        public async Task<RegistrationLeadResponse> RegisterLeadAsync(RegistrationLeadRequest request)
         {
-            _logger.LogInformation("Creating new RegistrationLeadInfo {@context}", request);
-            //using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
-
+            _logger.LogInformation("Creating new RegistrationLeadInfo {@context}", request); 
             try
             {
-
                 //await _publisherLeadUpdated.PublishAsync(MapToMessage(leadEntity));
                 //_logger.LogInformation("Sent partner update to service bus {@context}", request);
 
@@ -51,7 +51,18 @@ namespace MarketingBox.Integration.Service.Services
                 //_logger.LogInformation("Sent partner update to MyNoSql {@context}", request);
 
                 var customerInfo = await _bridgeService.RegisterCustomerAsync(new RegistrationCustomerRequest());
+                _depositUpdateStorage.Add(request.LeadUniqueId, new DepositUpdateMessage()
+                {
+                    BrandName = request.BrandName,
+                    CustomerId = customerInfo.RegistrationInfo.CustomerId,
+                    Email = request.Info.Email,
+                    TenantId = request.TenantId,
+                    Sequence = 0,
+                    BrandId = request.BrandId
+                });
 
+
+                //using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
                 return MapToGrpc(customerInfo);
             }
             catch (Exception e)
