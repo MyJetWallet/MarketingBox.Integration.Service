@@ -24,15 +24,13 @@ namespace MarketingBox.Integration.Service.Messages.Deposits
         public long BrandId { get; set; }
 
         [DataMember(Order = 7)]
-        public long AffiiateId { get; set; }
+        public long AffiliateId { get; set; }
 
         [DataMember(Order = 8)]
         public long CampaignId { get; set; }
 
         [DataMember(Order = 9)]
         public long BoxId { get; set; }
-
-
     }
 
 }

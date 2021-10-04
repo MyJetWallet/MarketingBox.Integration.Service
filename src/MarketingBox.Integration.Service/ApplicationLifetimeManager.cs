@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using MyJetWallet.Sdk.NoSql;
 using MyJetWallet.Sdk.Service;
 using MyServiceBus.TcpClient;
+using BackgroundService = MarketingBox.Integration.Service.Services.BackgroundService;
 
 namespace MarketingBox.Integration.Service
 {
@@ -10,25 +11,25 @@ namespace MarketingBox.Integration.Service
     {
         private readonly ILogger<ApplicationLifetimeManager> _logger;
         private readonly MyServiceBusTcpClient _myServiceBusTcpClient;
-        private readonly BackgroundJobs _myBackgroundJobs;
+        private readonly BackgroundService _myBackgroundService;
 
         public ApplicationLifetimeManager(
             IHostApplicationLifetime appLifetime, 
             ILogger<ApplicationLifetimeManager> logger,
             MyServiceBusTcpClient myServiceBusTcpClient,
-            BackgroundJobs myBackgroundJobs)
+            BackgroundService myBackgroundService)
             : base(appLifetime)
         {
             _logger = logger;
             _myServiceBusTcpClient = myServiceBusTcpClient;
-            _myBackgroundJobs = myBackgroundJobs;
+            _myBackgroundService = myBackgroundService;
         }
 
         protected override void OnStarted()
         {
             _logger.LogInformation("OnStarted has been called.");
             _myServiceBusTcpClient.Start();
-            _myBackgroundJobs.Start();
+            _myBackgroundService.Start();
         }
 
         protected override void OnStopping()

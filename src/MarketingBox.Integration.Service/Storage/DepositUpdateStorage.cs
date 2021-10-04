@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MarketingBox.Integration.Service.Messages.Deposits;
 
-namespace MarketingBox.Integration.Service.Services
+namespace MarketingBox.Integration.Service.Storage
 {
     public interface IDepositUpdateStorage
     {

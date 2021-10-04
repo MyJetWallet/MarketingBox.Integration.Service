@@ -10,6 +10,7 @@ using MarketingBox.Integration.Service.Grpc.Models.Common;
 using MarketingBox.Integration.Service.Grpc.Models.Leads;
 using MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts;
 using MarketingBox.Integration.Service.Messages.Deposits;
+using MarketingBox.Integration.Service.Storage;
 using MarketingBox.Integration.SimpleTrading.Bridge.Grpc;
 using MarketingBox.Integration.SimpleTrading.Bridge.Grpc.Models.Leads.Contracts;
 
@@ -58,7 +59,7 @@ namespace MarketingBox.Integration.Service.Services
                     Email = request.Info.Email,
                     TenantId = request.TenantId,
                     Sequence = 0,
-                    BrandId = request.BrandId
+                    BrandId = request.BrandId,
                 });
 
 
