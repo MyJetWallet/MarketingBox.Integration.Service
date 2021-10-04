@@ -4,9 +4,9 @@ using DotNetCoreDecorators;
 using MarketingBox.Integration.Service.Messages.Deposits;
 using MarketingBox.Integration.Service.Storage;
 using MarketingBox.Registration.Service.Grpc;
-using MarketingBox.Registration.Service.Grpc.Models.Deposits.Contracts;
 using Microsoft.Extensions.Logging;
 using MyJetWallet.Sdk.Service.Tools;
+
 
 namespace MarketingBox.Integration.Service.Services
 {
@@ -49,14 +49,15 @@ namespace MarketingBox.Integration.Service.Services
                 foreach (var operation in messages)
                 {
                     var message = operation.Value;
-                    var storeResponse = await _depositRegistrationService.CreateDepositAsync(new DepositCreateRequest()
+                    var storeResponse = await _depositRegistrationService.CreateDepositAsync(
+                        new MarketingBox.Registration.Service.Grpc.Models.Deposits.Contracts.DepositCreateRequest()
                     {
                         CustomerId = message.CustomerId,
                         Email = message.Email,
                         BrandName = message.BrandName,
                         BrandId = message.BrandId,
                         TenantId = message.TenantId,
-                        CreatedAt = DateTimeOffset.UtcNow,
+                        CreatedAt = DateTime.UtcNow,
                     });
                     _depositUpdateStorage.Remove(operation.Key);
                 }
