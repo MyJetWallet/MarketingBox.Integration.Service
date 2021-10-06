@@ -75,16 +75,18 @@ namespace MarketingBox.Integration.Service.Services
                     LeadUniqueId = request.LeadUniqueId
                 });
 
-                _depositUpdateStorage.Add(request.LeadUniqueId, new DepositUpdateMessage()
+                if (customerInfo.Status.Equals("successful", StringComparison.OrdinalIgnoreCase))
                 {
-                    BrandName = request.BrandName,
-                    CustomerId = customerInfo.RegistrationInfo.CustomerId,
-                    Email = request.Info.Email,
-                    TenantId = request.TenantId,
-                    Sequence = 0,
-                    BrandId = request.BrandId,
-                });
-
+                    _depositUpdateStorage.Add(request.LeadUniqueId, new DepositUpdateMessage()
+                    {
+                        BrandName = request.BrandName,
+                        CustomerId = customerInfo.RegistrationInfo.CustomerId,
+                        Email = request.Info.Email,
+                        TenantId = request.TenantId,
+                        Sequence = 0,
+                        BrandId = request.BrandId,
+                    });
+                }
 
                 return MapToGrpc(customerInfo, request);
             }
