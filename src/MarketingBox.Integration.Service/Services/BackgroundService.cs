@@ -13,7 +13,6 @@ namespace MarketingBox.Integration.Service.Services
     public class BackgroundService
     {
         private readonly MyTaskTimer _operationsTimer;
-        //private readonly IPublisher<DepositUpdateMessage> _publisherLeadUpdated;
         private readonly ILogger<BackgroundService> _logger;
         private readonly IDepositUpdateStorage _depositUpdateStorage;
         private readonly IDepositService _depositRegistrationService;
@@ -23,12 +22,10 @@ namespace MarketingBox.Integration.Service.Services
             IDepositUpdateStorage depositUpdateStorage, 
             IDepositService depositRegistrationService)
         {
-            //_publisherLeadUpdated = publisherLeadUpdated;
             _logger = logger;
             _depositUpdateStorage = depositUpdateStorage;
             _depositRegistrationService = depositRegistrationService;
             _operationsTimer = new MyTaskTimer(nameof(BackgroundService), TimeSpan.FromSeconds(10), logger, Process);
-            //_operationsTimer.Register("OperationsTimer", async () => { await Process(); });
 
         }
         public void Start()

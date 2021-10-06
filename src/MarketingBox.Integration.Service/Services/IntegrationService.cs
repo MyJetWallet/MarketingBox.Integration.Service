@@ -7,34 +7,32 @@ using System;
 using System.Threading.Tasks;
 using MarketingBox.Integration.Postgres.Entities.Lead;
 using MarketingBox.Integration.Service.Grpc.Models.Common;
-using MarketingBox.Integration.Service.Grpc.Models.Leads;
 using MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts;
 using MarketingBox.Integration.Service.Messages.Deposits;
 using MarketingBox.Integration.Service.Storage;
 using MarketingBox.Integration.SimpleTrading.Bridge.Grpc;
+using MarketingBox.Integration.SimpleTrading.Bridge.Grpc.Models.Common;
+using MarketingBox.Integration.SimpleTrading.Bridge.Grpc.Models.Customers;
+using MarketingBox.Integration.SimpleTrading.Bridge.Grpc.Models.Customers.Contracts;
 using MarketingBox.Integration.SimpleTrading.Bridge.Grpc.Models.Leads.Contracts;
+using Error = MarketingBox.Integration.Service.Grpc.Models.Common.Error;
+using RegistrationCustomerInfo = MarketingBox.Integration.Service.Grpc.Models.Leads.RegistrationCustomerInfo;
 
 namespace MarketingBox.Integration.Service.Services
 {
     public class IntegrationService : IIntegrationService
     {
         private readonly ILogger<IntegrationService> _logger;
-        //private readonly DbContextOptionsBuilder<DatabaseContext> _dbContextOptionsBuilder;
-        private readonly IPublisher<DepositUpdateMessage> _publisherLeadUpdated;
-        private readonly IBridgeService _bridgeService;
+        private readonly IRegisterService _bridgeService;
         private readonly IDepositUpdateStorage _depositUpdateStorage;
 
 
         public IntegrationService(ILogger<IntegrationService> logger,
-            //DbContextOptionsBuilder<DatabaseContext> dbContextOptionsBuilder,
-            IPublisher<DepositUpdateMessage> publisherLeadUpdated,
-            IBridgeService bridgeService,
+            IRegisterService bridgeService,
             IDepositUpdateStorage depositUpdateStorage
             )
         {
             _logger = logger;
-            //_dbContextOptionsBuilder = dbContextOptionsBuilder;
-            _publisherLeadUpdated = publisherLeadUpdated;
             _bridgeService = bridgeService;
             _depositUpdateStorage = depositUpdateStorage;
         }
@@ -44,14 +42,39 @@ namespace MarketingBox.Integration.Service.Services
             _logger.LogInformation("Creating new RegistrationLeadInfo {@context}", request); 
             try
             {
-                //await _publisherLeadUpdated.PublishAsync(MapToMessage(leadEntity));
-                //_logger.LogInformation("Sent partner update to service bus {@context}", request);
+                var customerInfo = await _bridgeService.RegisterCustomerAsync(new RegistrationCustomerRequest()
+                {
+                    Info = new RegistrationLeadInfo()
+                        { 
+                            Email = request.Info.Email,
+                            Password = request.Info.Password,
+                            Country = request.Info.Country,
+                            FirstName = request.Info.FirstName,
+                            Ip = request.Info.Ip,
+                            Language = request.Info.Ip,
+                            LastName = request.Info.LastName,
+                            Phone = request.Info.Phone
+                        },
+                    LeadId = request.LeadId,
+                    TenantId = request.TenantId,
+                    AdditionalInfo = new RegistrationLeadAdditionalInfo()
+                    {
+                        So = request.AdditionalInfo.So,
+                        Sub = request.AdditionalInfo.Sub,
+                        Sub1 = request.AdditionalInfo.Sub1,
+                        Sub2 = request.AdditionalInfo.Sub2,
+                        Sub3 = request.AdditionalInfo.Sub3,
+                        Sub4 = request.AdditionalInfo.Sub4,
+                        Sub5 = request.AdditionalInfo.Sub5,
+                        Sub6 = request.AdditionalInfo.Sub6,
+                        Sub7 = request.AdditionalInfo.Sub7,
+                        Sub8 = request.AdditionalInfo.Sub8,
+                        Sub9 = request.AdditionalInfo.Sub9,
+                        Sub10 = request.AdditionalInfo.Sub10,
+                    },
+                    LeadUniqueId = request.LeadUniqueId
+                });
 
-                //var nosql = MapToNoSql(leadEntity);
-                //await _myNoSqlServerDataWriter.InsertOrReplaceAsync(nosql);
-                //_logger.LogInformation("Sent partner update to MyNoSql {@context}", request);
-
-                var customerInfo = await _bridgeService.RegisterCustomerAsync(new RegistrationCustomerRequest());
                 _depositUpdateStorage.Add(request.LeadUniqueId, new DepositUpdateMessage()
                 {
                     BrandName = request.BrandName,
@@ -63,8 +86,7 @@ namespace MarketingBox.Integration.Service.Services
                 });
 
 
-                //using var ctx = new DatabaseContext(_dbContextOptionsBuilder.Options);
-                return MapToGrpc(customerInfo);
+                return MapToGrpc(customerInfo, request);
             }
             catch (Exception e)
             {
@@ -75,64 +97,53 @@ namespace MarketingBox.Integration.Service.Services
         }
 
 
-        private static RegistrationLeadResponse MapToGrpc(RegistrationCustomerResponse brandCustomerInfo)
+        private static RegistrationLeadResponse MapToGrpc(RegistrationCustomerResponse brandCustomerInfo,
+            RegistrationLeadRequest registrationLeadRequest)
         {
-            //if(brandCustomerInfo.Status.Equals("successful", StringComparison.OrdinalIgnoreCase))
-            //{
-
+            if (brandCustomerInfo.Status.Equals("successful", StringComparison.OrdinalIgnoreCase))
+            {
                 return RegistrationLeadResponse.Successfully(new RegistrationCustomerInfo()
                 {
                     CustomerId = brandCustomerInfo.RegistrationInfo.CustomerId,
                     LoginUrl = brandCustomerInfo.RegistrationInfo.LoginUrl,
-                    Password = brandCustomerInfo.RegistrationInfo.Password,
-                    Token = brandCustomerInfo.RegistrationInfo.Token,
+                    Password = registrationLeadRequest.Info.Password,
+                    Token = brandCustomerInfo.RegistrationInfo.Token
                 });
-            //}
+            }
 
-            //return RegistrationLeadResponse.Failed(new Error()
-            //{
-            //    Message = brandCustomerInfo.Error.Message,
-            //    Type = ErrorType.Unknown// brandCustomerInfo.Error.Type
-            //}, new RegistrationLeadInfo()
-            //{
-                
-            //});
-
+            return RegistrationLeadResponse.Failed(new Error()
+                {
+                    Message = brandCustomerInfo.Message,
+                    Type = MapError(brandCustomerInfo.Error.Type)
+                }, new Grpc.Models.Leads.RegistrationLeadInfo()
+                {
+                    Email = registrationLeadRequest.Info.Email,
+                    Password = registrationLeadRequest.Info.Password,
+                    Country = registrationLeadRequest.Info.Country,
+                    FirstName = registrationLeadRequest.Info.FirstName,
+                    Ip = registrationLeadRequest.Info.Ip,
+                    Language = registrationLeadRequest.Info.Ip,
+                    LastName = registrationLeadRequest.Info.LastName,
+                    Phone = registrationLeadRequest.Info.Phone
+                }
+            );
         }
 
-        private static DepositUpdateMessage MapToMessage(LeadEntity leadEntity)
+        private static ErrorType MapError(RegisterErrorType registerErrorType)
         {
-            return new DepositUpdateMessage()
+            switch (registerErrorType)
             {
-                //TenantId = leadEntity.TenantId,
-                //AffiliateId = leadEntity.LeadId,
-                //Info = new Messages.Partners.PartnerGeneralInfo()
-                //{
-                //    //CreatedAt = leadEntity.RegistrationBrandInfo.CreatedAt.UtcDateTime,
-                //    //Email = leadEntity.RegistrationBrandInfo.Email,
-                //    ////Password = leadEntity.RegistrationBrandInfo.Password,
-                //    //Phone = leadEntity.RegistrationBrandInfo.Phone,
-                //    //Role = leadEntity.RegistrationBrandInfo.Role.MapEnum<Messages.Partners.PartnerRole>(),
-                //    //Skype = leadEntity.RegistrationBrandInfo.Skype,
-                //    //Type = leadEntity.RegistrationBrandInfo.Type.MapEnum<Messages.Partners.PartnerState>(),
-                //    //Username = leadEntity.RegistrationBrandInfo.Username,
-                //    //ZipCode = leadEntity.RegistrationBrandInfo.ZipCode
-                //}
-            };
-        }
+                case RegisterErrorType.InvalidParameter:
+                    return ErrorType.InvalidParameter;
 
-        //private static LeadNoSql MapToNoSql(LeadEntity leadEntity)
-        //{
-        //    return LeadNoSql.Create(
-        //        leadEntity.TenantId,
-        //        leadEntity.LeadId,
-        //        new MyNoSql.Leads.RegistrationLeadInfo()
-        //        {
-        //            CreatedAt = leadEntity.CreatedAt,
-        //            Email = leadEntity.Email,
-        //            Username = leadEntity.FirstName + " " + leadEntity.LastName
-        //        }
-        //        );
-        //}
+                case RegisterErrorType.RegistrationAlreadyExist:
+                    return ErrorType.RegistrationAlreadyExist;
+
+                case RegisterErrorType.Unknown:
+                    return ErrorType.Unknown;
+
+                default: return ErrorType.Unknown;
+            }
+        }
     }
 }
