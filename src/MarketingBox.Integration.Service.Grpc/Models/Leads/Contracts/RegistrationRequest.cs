@@ -3,7 +3,7 @@
 namespace MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts
 {
     [DataContract]
-    public class RegistrationLeadRequest
+    public class RegistrationRequest
     {
         [DataMember(Order = 1)]
         public string TenantId { get; set; }

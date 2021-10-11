@@ -1,34 +1,27 @@
-﻿using DotNetCoreDecorators;
-using MarketingBox.Integration.Postgres;
-using MarketingBox.Integration.Service.Grpc;
-using Microsoft.EntityFrameworkCore;
+﻿using MarketingBox.Integration.Service.Grpc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using MarketingBox.Integration.Postgres.Entities.Lead;
 using MarketingBox.Integration.Service.Grpc.Models.Common;
+using MarketingBox.Integration.Service.Grpc.Models.Leads;
 using MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts;
 using MarketingBox.Integration.Service.Messages.Deposits;
 using MarketingBox.Integration.Service.Storage;
-using MarketingBox.Integration.SimpleTrading.Bridge.Grpc;
-using MarketingBox.Integration.SimpleTrading.Bridge.Grpc.Models.Common;
-using MarketingBox.Integration.SimpleTrading.Bridge.Grpc.Models.Customers;
-using MarketingBox.Integration.SimpleTrading.Bridge.Grpc.Models.Customers.Contracts;
-using MarketingBox.Integration.SimpleTrading.Bridge.Grpc.Models.Leads.Contracts;
 using Error = MarketingBox.Integration.Service.Grpc.Models.Common.Error;
-using RegistrationCustomerInfo = MarketingBox.Integration.Service.Grpc.Models.Leads.RegistrationCustomerInfo;
+using ErrorType = MarketingBox.Integration.Service.Grpc.Models.Common.ErrorType;
+
 
 namespace MarketingBox.Integration.Service.Services
 {
     public class IntegrationService : IIntegrationService
     {
         private readonly ILogger<IntegrationService> _logger;
-        private readonly IRegisterService _bridgeService;
+        private readonly IBridgeService _bridgeService;
         private readonly IDepositUpdateStorage _depositUpdateStorage;
 
 
         public IntegrationService(ILogger<IntegrationService> logger,
-            IRegisterService bridgeService,
+            IBridgeService bridgeService,
             IDepositUpdateStorage depositUpdateStorage
             )
         {
@@ -37,12 +30,12 @@ namespace MarketingBox.Integration.Service.Services
             _depositUpdateStorage = depositUpdateStorage;
         }
 
-        public async Task<RegistrationLeadResponse> RegisterLeadAsync(RegistrationLeadRequest request)
+        public async Task<RegistrationResponse> RegisterLeadAsync(RegistrationRequest request)
         {
             _logger.LogInformation("Creating new RegistrationLeadInfo {@context}", request); 
             try
             {
-                var customerInfo = await _bridgeService.RegisterCustomerAsync(new RegistrationCustomerRequest()
+                var customerInfo = await _bridgeService.RegisterCustomerAsync(new RegistrationBridgeRequest()
                 {
                     Info = new RegistrationLeadInfo()
                         { 
@@ -55,8 +48,6 @@ namespace MarketingBox.Integration.Service.Services
                             LastName = request.Info.LastName,
                             Phone = request.Info.Phone
                         },
-                    LeadId = request.LeadId,
-                    TenantId = request.TenantId,
                     AdditionalInfo = new RegistrationLeadAdditionalInfo()
                     {
                         So = request.AdditionalInfo.So,
@@ -72,10 +63,9 @@ namespace MarketingBox.Integration.Service.Services
                         Sub9 = request.AdditionalInfo.Sub9,
                         Sub10 = request.AdditionalInfo.Sub10,
                     },
-                    LeadUniqueId = request.LeadUniqueId
                 });
 
-                if (customerInfo.Status.Equals("successful", StringComparison.OrdinalIgnoreCase))
+                if (customerInfo.ResultCode == ResultCode.CompletedSuccessfully)
                 {
                     _depositUpdateStorage.Add(request.LeadUniqueId, new DepositUpdateMessage()
                     {
@@ -94,58 +84,73 @@ namespace MarketingBox.Integration.Service.Services
             {
                 _logger.LogError(e, "Error creating lead {@context}", request);
 
-                return new RegistrationLeadResponse() { Error = new Error() { Message = "Internal error", Type = ErrorType.Unknown } };
+                return new RegistrationResponse() { Error = new Error() { Message = "Internal error", Type = ErrorType.Unknown } };
             }
         }
 
 
-        private static RegistrationLeadResponse MapToGrpc(RegistrationCustomerResponse brandCustomerInfo,
-            RegistrationLeadRequest registrationLeadRequest)
+        private static RegistrationResponse MapToGrpc(RegistrationBridgeResponse brandInfo,
+            RegistrationRequest registrationRequest)
         {
-            if (brandCustomerInfo.Status.Equals("successful", StringComparison.OrdinalIgnoreCase))
+            if (brandInfo.ResultCode == ResultCode.CompletedSuccessfully)
             {
-                return RegistrationLeadResponse.Successfully(new RegistrationCustomerInfo()
+                return Successfully(new RegisteredLeadInfo()
                 {
-                    CustomerId = brandCustomerInfo.RegistrationInfo.CustomerId,
-                    LoginUrl = brandCustomerInfo.RegistrationInfo.LoginUrl,
-                    Password = registrationLeadRequest.Info.Password,
-                    Token = brandCustomerInfo.RegistrationInfo.Token
+                    CustomerId = brandInfo.RegistrationInfo.CustomerId,
+                    LoginUrl = brandInfo.RegistrationInfo.LoginUrl,
+                    Token = brandInfo.RegistrationInfo.Token,
                 });
             }
 
-            return RegistrationLeadResponse.Failed(new Error()
+            return Failed(new Error()
                 {
-                    Message = brandCustomerInfo.Message,
-                    Type = MapError(brandCustomerInfo.Error.Type)
-                }, new Grpc.Models.Leads.RegistrationLeadInfo()
+                    Message = brandInfo.ResultMessage,
+                    Type = brandInfo.Error.Type
+                }, 
+                new RegistrationLeadInfo()
                 {
-                    Email = registrationLeadRequest.Info.Email,
-                    Password = registrationLeadRequest.Info.Password,
-                    Country = registrationLeadRequest.Info.Country,
-                    FirstName = registrationLeadRequest.Info.FirstName,
-                    Ip = registrationLeadRequest.Info.Ip,
-                    Language = registrationLeadRequest.Info.Ip,
-                    LastName = registrationLeadRequest.Info.LastName,
-                    Phone = registrationLeadRequest.Info.Phone
+                    Email = registrationRequest.Info.Email,
+                    Password = registrationRequest.Info.Password,
+                    Country = registrationRequest.Info.Country,
+                    FirstName = registrationRequest.Info.FirstName,
+                    Ip = registrationRequest.Info.Ip,
+                    Language = registrationRequest.Info.Ip,
+                    LastName = registrationRequest.Info.LastName,
+                    Phone = registrationRequest.Info.Phone
                 }
             );
         }
 
-        private static ErrorType MapError(RegisterErrorType registerErrorType)
+        private static RegistrationResponse Successfully(RegisteredLeadInfo brandRegisteredLeadInfo)
         {
-            switch (registerErrorType)
+            return new RegistrationResponse()
             {
-                case RegisterErrorType.InvalidParameter:
-                    return ErrorType.InvalidParameter;
+                Status = ResultCode.CompletedSuccessfully,
+                Message = brandRegisteredLeadInfo.LoginUrl,
+                RegisteredLeadInfo = brandRegisteredLeadInfo
+            };
+        }
 
-                case RegisterErrorType.RegistrationAlreadyExist:
-                    return ErrorType.RegistrationAlreadyExist;
+        private static RegistrationResponse Failed(Error error, RegistrationLeadInfo originalData)
+        {
+            return new RegistrationResponse()
+            {
+                Status = ResultCode.Failed,
+                Message = error.Message,
+                Error = error,
+                OriginalData = originalData
+            };
+        }
 
-                case RegisterErrorType.Unknown:
-                    return ErrorType.Unknown;
-
-                default: return ErrorType.Unknown;
-            }
+        private static RegistrationResponse RequiredAuthentication(Error error, RegistrationLeadInfo originalData)
+        {
+            return new RegistrationResponse()
+            {
+                Status = ResultCode.RequiredAuthentication,
+                Message = error.Message,
+                Error = error,
+                OriginalData = originalData
+            };
         }
     }
 }

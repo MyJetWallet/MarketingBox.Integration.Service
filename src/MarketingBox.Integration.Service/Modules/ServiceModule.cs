@@ -1,9 +1,9 @@
 ﻿using Autofac;
+using MarketingBox.Integration.Bridge.Client;
 using MarketingBox.Integration.Service.Messages;
 using MarketingBox.Integration.Service.Messages.Deposits;
 using MarketingBox.Integration.Service.Services;
 using MarketingBox.Integration.Service.Storage;
-using MarketingBox.Integration.SimpleTrading.Bridge.Client;
 using MarketingBox.Registration.Service.Client;
 using MyJetWallet.Sdk.NoSql;
 using MyJetWallet.Sdk.Service;

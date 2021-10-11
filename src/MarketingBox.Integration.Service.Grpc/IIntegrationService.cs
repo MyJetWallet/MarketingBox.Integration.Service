@@ -8,6 +8,6 @@ namespace MarketingBox.Integration.Service.Grpc
     public interface IIntegrationService
     {
         [OperationContract]
-        Task<RegistrationLeadResponse> RegisterLeadAsync(RegistrationLeadRequest request);
+        Task<RegistrationResponse> RegisterLeadAsync(RegistrationRequest request);
     }
 }

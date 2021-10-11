@@ -4,6 +4,10 @@
     {
         Unknown = 0,
         InvalidParameter = 1,
-        RegistrationAlreadyExist = 2,
+        AlreadyExist = 2,
+        InvalidEmail = 3,
+        InvalidUserNameOrPassword = 4,
+        InvalidCountry = 5,
+        InvalidPersonalData = 6
     }
 }

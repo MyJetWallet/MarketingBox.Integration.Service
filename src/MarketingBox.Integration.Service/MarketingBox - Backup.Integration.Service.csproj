@@ -32,12 +32,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MarketingBox.Integration.Bridge.Client\MarketingBox.Integration.Bridge.Client.csproj" />
     <ProjectReference Include="..\MarketingBox.Integration.Postgres\MarketingBox.Integration.Postgres.csproj" />
     <ProjectReference Include="..\MarketingBox.Integration.Service.Domain\MarketingBox.Integration.Service.Domain.csproj" />
     <ProjectReference Include="..\MarketingBox.Integration.Service.Grpc\MarketingBox.Integration.Service.Grpc.csproj" />
     <ProjectReference Include="..\MarketingBox.Integration.Service.MyNoSql\MarketingBox.Integration.Service.MyNoSql.csproj" />
     <ProjectReference Include="..\MarketingBox.Integration.ServiceBus\MarketingBox.Integration.Service.Messages.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="MarketingBox.Integration.SimpleTrading.Bridge.Grpc">
+      <HintPath>..\..\..\MarketingBox.Integration.SimpleTrading.Bridge\src\MarketingBox.Integration.SimpleTrading.Bridge.Client\bin\Debug\net5.0\MarketingBox.Integration.SimpleTrading.Bridge.Grpc.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
