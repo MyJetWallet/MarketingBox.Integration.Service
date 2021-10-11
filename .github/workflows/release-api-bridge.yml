@@ -1,4 +1,4 @@
-name: Release API client nuget
+name: Release api bridge nuget
 
 on:
   push:
