@@ -1,4 +1,4 @@
-name: Release API client nuget
+name: Release Integration API Client nuget
 
 on:
   push:
