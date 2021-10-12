@@ -23,7 +23,7 @@
     <TargetsForTfmSpecificBuildOutput>
       $(TargetsForTfmSpecificBuildOutput);PackReferencedProjectOutputs
     </TargetsForTfmSpecificBuildOutput>
-    <PackageId>MarketingBox.Integration.Service.Client</PackageId>
+    <PackageId>MarketingBox.Integration.Bridge.Client</PackageId>
     <Authors>MyJetWallet</Authors>
     <Company>MyJetWallet</Company>
     <Product>MarketingBox</Product>
