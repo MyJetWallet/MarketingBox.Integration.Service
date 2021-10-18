@@ -1,7 +1,8 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using MarketingBox.Integration.Service.Messages.Deposits;
+using MarketingBox.Registration.Service.Messages.Deposits;
+
 
 namespace MarketingBox.Integration.Service.Storage
 {

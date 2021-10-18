@@ -1,7 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using DotNetCoreDecorators;
-using MarketingBox.Integration.Service.Messages.Deposits;
 using MarketingBox.Integration.Service.Storage;
 using MarketingBox.Registration.Service.Grpc;
 using Microsoft.Extensions.Logging;
@@ -17,8 +15,7 @@ namespace MarketingBox.Integration.Service.Services
         private readonly IDepositUpdateStorage _depositUpdateStorage;
         private readonly IDepositService _depositRegistrationService;
 
-        public BackgroundService(IPublisher<DepositUpdateMessage> publisherLeadUpdated,
-            ILogger<BackgroundService> logger,
+        public BackgroundService(ILogger<BackgroundService> logger,
             IDepositUpdateStorage depositUpdateStorage, 
             IDepositService depositRegistrationService)
         {

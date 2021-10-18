@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using MarketingBox.Integration.Service.Grpc.Models.Common;
 using MarketingBox.Integration.Service.Grpc.Models.Leads;
 using MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts;
-using MarketingBox.Integration.Service.Messages.Deposits;
 using MarketingBox.Integration.Service.Storage;
+using MarketingBox.Registration.Service.Messages.Deposits;
 using Error = MarketingBox.Integration.Service.Grpc.Models.Common.Error;
 using ErrorType = MarketingBox.Integration.Service.Grpc.Models.Common.ErrorType;
 
@@ -65,6 +65,8 @@ namespace MarketingBox.Integration.Service.Services
                     },
                 });
 
+                
+                //TODO: Move deposit generator to another service
                 if (customerInfo.ResultCode == ResultCode.CompletedSuccessfully)
                 {
                     _depositUpdateStorage.Add(request.LeadUniqueId, new DepositUpdateMessage()
