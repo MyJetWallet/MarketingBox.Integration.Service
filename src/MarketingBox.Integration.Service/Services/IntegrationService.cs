@@ -78,6 +78,8 @@ namespace MarketingBox.Integration.Service.Services
                     });
                 }
 
+                _logger.LogInformation("Created RegistrationLeadInfo {@context}", customerInfo);
+
                 return MapToGrpc(customerInfo, request);
             }
             catch (Exception e)

@@ -18,7 +18,7 @@ namespace MarketingBox.Integration.Service.Modules
             var serviceBusClient = builder
                 .RegisterMyServiceBusTcpClient(
                     Program.ReloadedSettings(e => e.MarketingBoxServiceBusHostPort),
-                    ApplicationEnvironment.HostName, Program.LogFactory);
+                    Program.LogFactory);
 
 
             builder.RegisterSimpleTradingBridgeClient(Program.Settings.IntegrationMonfexBridgeUrl);
