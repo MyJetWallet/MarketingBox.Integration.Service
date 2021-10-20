@@ -43,7 +43,7 @@ namespace MarketingBox.Integration.Service.Services
                 foreach (var operation in messages)
                 {
                     var message = operation.Value;
-                    var storeResponse = await _depositRegistrationService.CreateDepositAsync(
+                    var storeResponse = await _depositRegistrationService.RegisterDepositAsync(
                         new MarketingBox.Registration.Service.Grpc.Models.Deposits.Contracts.DepositCreateRequest()
                     {
                         CustomerId = message.CustomerId,
