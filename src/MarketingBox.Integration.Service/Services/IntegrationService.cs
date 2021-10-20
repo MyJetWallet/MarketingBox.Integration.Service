@@ -6,7 +6,6 @@ using MarketingBox.Integration.Service.Grpc.Models.Common;
 using MarketingBox.Integration.Service.Grpc.Models.Leads;
 using MarketingBox.Integration.Service.Grpc.Models.Leads.Contracts;
 using MarketingBox.Integration.Service.Storage;
-using MarketingBox.Registration.Service.Messages.Deposits;
 using Error = MarketingBox.Integration.Service.Grpc.Models.Common.Error;
 using ErrorType = MarketingBox.Integration.Service.Grpc.Models.Common.ErrorType;
 
